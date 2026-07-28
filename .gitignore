@@ -1,0 +1,9 @@
+node_modules/
+lib/
+dist/
+.cache/
+graph/
+config.json
+.workbuddy/
+*.log
+.DS_Store

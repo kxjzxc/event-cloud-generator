@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script type="application/json" id="event-data">{{ eventsJson }}</script>
+  
+  <div class="home">
+    <div class="home-header">
+      <h1 class="home-title">EVENT CLOUD</h1>
+      <p class="home-subtitle">随机探索，遇见过去的自己</p>
+      <div class="home-stats">
+        共 <span id="total-events">0</span> 个事件 · 已解锁 <span id="unlocked-count">0</span> 个
+      </div>
+    </div>
+    
+    <div class="home-actions">
+      <button id="launch-btn" class="launch-btn">开启探索</button>
+      <button id="date-jump-btn" class="launch-btn">时光机</button>
+    </div>
+  </div>
+
+  <div id="date-modal" class="card-modal">
+    <div class="card date-card">
+      <div class="card-header">
+        <h2 class="card-title">选择日期</h2>
+        <button id="date-close" class="card-close">×</button>
+      </div>
+      <div class="card-body">
+        <div class="date-picker-wrap">
+          <input type="date" id="date-picker" class="date-picker" />
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="card-actions">
+          <button id="date-confirm" class="action-btn">
+            <span>→</span>
+            <span>前往</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="card-modal" class="card-modal">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div id="card-date" class="card-date"></div>
+          <h2 id="card-title" class="card-title"></h2>
+        </div>
+        <button id="card-close" class="card-close">×</button>
+      </div>
+
+      <div id="card-body" class="card-body">
+        <div id="card-content" class="card-content"></div>
+        <div id="card-media" class="card-media"></div>
+        <div id="card-tags" class="card-tags"></div>
+        <div id="card-links" class="card-links"></div>
+      </div>
+
+      <div class="card-footer">
+        <div class="card-actions">
+          <button id="btn-random" class="action-btn random-btn">
+            <span>→</span>
+            <span>下一站</span>
+          </button>
+          <button id="btn-reselect" class="action-btn" style="display:none">
+            <span>←</span>
+            <span>重新选择日期</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "event-cloud",
+  "version": "0.1.0",
+  "description": "Static Event Site Generator — compile your Logseq Graph into a browsable event cloud",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "bin": {
+    "evc": "bin/evc.js",
+    "tm": "bin/evc.js"
+  },
+  "files": [
+    "lib/",
+    "bin/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build",
+    "dev": "ts-node src/cli/index.ts",
+    "evc": "ts-node src/cli/index.ts",
+    "g": "ts-node src/cli/index.ts generate",
+    "s": "ts-node src/cli/index.ts server",
+    "d": "ts-node src/cli/index.ts deploy",
+    "clean": "ts-node src/cli/index.ts clean",
+    "new": "ts-node src/cli/index.ts new",
+    "init": "ts-node src/cli/index.ts init",
+    "lint": "eslint src/",
+    "format": "prettier --write src/"
+  },
+  "keywords": ["logseq", "static-site-generator", "event", "event-cloud"],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^12.1.0",
+    "marked": "^12.0.2",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  }
+}

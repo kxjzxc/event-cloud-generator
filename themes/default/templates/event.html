@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div id="event-index" style="display:none">{{ indexJson }}</div>
+  
+  <a href="../index.html" class="back-home">← 返回</a>
+  
+  <div class="event-page" data-event-id="{{ eventId }}">
+    <header class="event-header">
+      <div class="event-date">{{ date }}</div>
+      <h1 class="event-title">{{ title }}</h1>
+    </header>
+    
+    <article class="event-content">
+      {{ content }}
+    </article>
+    
+    {% if media %}
+    <div class="event-media">
+      {{ media }}
+    </div>
+    {% endif %}
+    
+    {% if tagsHtml %}
+    <div class="event-tags">
+      {{ tagsHtml }}
+    </div>
+    {% endif %}
+    
+    {% if links %}
+    <div class="event-links">
+      {{ links }}
+    </div>
+    {% endif %}
+    
+    <footer class="event-footer">
+      {% if siblings %}
+      <div class="siblings">
+        <h4>关联事件</h4>
+        <div class="sibling-list">
+          {{ siblings }}
+        </div>
+      </div>
+      {% endif %}
+      
+      <a id="travel-again" class="travel-again" href="#">再次穿越</a>
+    </footer>
+  </div>
+  
+  <div id="image-modal" class="modal">
+    <img id="modal-img" src="" alt="">
+  </div>
+  
+  <script src="../js/app.js"></script>
+</body>
+</html>
