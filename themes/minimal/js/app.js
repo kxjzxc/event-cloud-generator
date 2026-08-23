@@ -723,16 +723,6 @@
           cardSource = 'date-picker';
           historyStack = [{ type: 'date-picker' }];
           showMemoryLocked(date);
-        } else if (dayEvents.length === 1) {
-          var index = allEvents.findIndex(function(e) { return e.id === dayEvents[0].id; });
-          if (index >= 0) {
-            // Push date-picker so 「返回」 restores the date modal, not the home page.
-            isRandomMode = false;
-            currentEventIndex = -1;
-            cardSource = 'date-picker';
-            historyStack = [{ type: 'date-picker' }];
-            openCard(index);
-          }
         } else {
           isRandomMode = false;
           cardSource = 'date-picker';
