@@ -816,6 +816,16 @@
       if (targetIndex >= 0) {
         openCard(targetIndex);
       }
+      return;
+    }
+    var tmLink = e.target.closest('.tm-link');
+    if (tmLink) {
+      e.preventDefault();
+      var name = decodeURIComponent(tmLink.getAttribute('href').replace(/^#/, ''));
+      var idx = allEvents.findIndex(function(e) { return e.title === name; });
+      if (idx >= 0) {
+        openCard(idx);
+      }
     }
   });
 
