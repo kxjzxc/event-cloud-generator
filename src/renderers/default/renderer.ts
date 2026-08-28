@@ -8,6 +8,7 @@ export class DefaultRenderer implements IRenderer {
     events: TMEvent[],
     index: EventIndexEntry[],
     ctx: RenderContext,
+    aboutHtml: string = '',
   ): Promise<void> {
     const { storage, config } = ctx;
     const indexJson = JSON.stringify(index);
@@ -22,8 +23,8 @@ export class DefaultRenderer implements IRenderer {
     // without prematurely closing the tag when contentHtml contains iframes/scripts.
     const eventsJson = JSON.stringify(events).replace(/<\/script/gi, '<\\/script');
 
-    await storage.save('index.html', this.renderHome(indexJson, eventsJson, theme));
-    await storage.save('archive.html', this.renderArchive(indexJson, eventsJson, theme));
+    await storage.save('index.html', this.renderHome(indexJson, eventsJson, theme, aboutHtml));
+    await storage.save('archive.html', this.renderArchive(indexJson, eventsJson, theme, aboutHtml));
 
     for (const event of events) {
       const html = this.renderEvent(event, titleMap, indexJson, theme);
@@ -31,20 +32,34 @@ export class DefaultRenderer implements IRenderer {
     }
   }
 
-  private renderHome(indexJson: string, eventsJson: string, theme: { templates: { home: string } }): string {
+  private renderHome(
+    indexJson: string,
+    eventsJson: string,
+    theme: { templates: { home: string } },
+    aboutHtml: string = '',
+  ): string {
     return renderTemplate(theme.templates.home, {
       title: 'Event Cloud',
       subtitle: '随机探索，遇见过去的自己',
       indexJson,
       eventsJson,
+      aboutHtml,
+      hasAbout: aboutHtml.trim().length > 0,
     });
   }
 
-  private renderArchive(indexJson: string, eventsJson: string, theme: { templates: { archive: string } }): string {
+  private renderArchive(
+    indexJson: string,
+    eventsJson: string,
+    theme: { templates: { archive: string } },
+    aboutHtml: string = '',
+  ): string {
     return renderTemplate(theme.templates.archive, {
       title: '事件馆 — Event Cloud',
       indexJson,
       eventsJson,
+      aboutHtml,
+      hasAbout: aboutHtml.trim().length > 0,
     });
   }
 

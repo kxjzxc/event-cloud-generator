@@ -70,6 +70,8 @@ export interface TMEvent {
   media: MediaAsset[];
   /** Music embeds from the page, in document order (card playlist) */
   tracks: MusicTrack[];
+  /** Build-time visibility flag. Hidden events are parsed but not published. */
+  hidden: boolean;
   /** Path to the source page file (relative to graph root) */
   sourceFile: string;
   /** Other Event ids from the same date */
@@ -130,10 +132,21 @@ export interface IImageProcessor {
 
 /**
  * Renderer plugin — converts Events + index into static HTML pages.
+ *
+ * Optional `aboutHtml` is pre-rendered, sanitized HTML for an "About" entrypoint.
+ * When present and non-empty, renderers should surface an About link/modal on the
+ * home page; when absent or empty the entrypoint MUST be hidden so existing
+ * downstream renderers (that only know the 3-arg signature) keep working without
+ * any behavioral change.
  */
 export interface IRenderer {
   readonly name: string;
-  render(events: TMEvent[], index: EventIndexEntry[], ctx: RenderContext): Promise<void>;
+  render(
+    events: TMEvent[],
+    index: EventIndexEntry[],
+    ctx: RenderContext,
+    aboutHtml?: string,
+  ): Promise<void>;
 }
 
 // ─── Config Types ─────────────────────────────────────────────
@@ -176,6 +189,8 @@ export interface TMConfig {
   media: ImageProcessConfig;
   deploy?: DeployConfig;
   theme?: string;
+  /** Include hidden events in generated output. Defaults to false. */
+  includeHidden?: boolean;
 }
 
 export interface RenderContext {

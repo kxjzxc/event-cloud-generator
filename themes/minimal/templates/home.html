@@ -8,6 +8,12 @@
 </head>
 <body>
   <script type="application/json" id="event-data">{{ eventsJson }}</script>
+
+  {% if hasAbout %}
+  <div class="topbar-links">
+    <button id="about-btn" class="topbar-link">关于</button>
+  </div>
+  {% endif %}
   
   <div class="home">
     <div class="home-header">
@@ -45,6 +51,20 @@
       </div>
     </div>
   </div>
+
+  {% if hasAbout %}
+  <div id="about-modal" class="card-modal">
+    <div class="card about-card">
+      <div class="card-header">
+        <h2 class="card-title">关于</h2>
+        <button id="about-close" class="card-close">×</button>
+      </div>
+      <div class="card-body">
+        <div class="about-content">{{ aboutHtml }}</div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 
   <div id="card-modal" class="card-modal">
     <div class="card">

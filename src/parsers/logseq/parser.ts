@@ -123,6 +123,13 @@ export class LogseqParser implements IParser {
     const contentRaw = this.blocksToPageMarkdown(blocks, tracks);
     const contentHtml = this.renderMarkdown(contentRaw, tracks);
 
+    // Build-time visibility: honor the Logseq page property `hidden:: true`
+    // (case-insensitive key, values `true/1/yes/y/on`). Any other value or
+    // absence keeps the event public. This mirrors the TMEvent.hidden contract
+    // defined in src/types — "parsed but not published".
+    const hiddenRaw = pageProperties['hidden']?.trim().toLowerCase();
+    const hidden = ['true', '1', 'yes', 'y', 'on'].includes(hiddenRaw ?? '');
+
     return {
       id,
       title,
@@ -134,6 +141,7 @@ export class LogseqParser implements IParser {
       links,
       media,
       tracks,
+      hidden,
       sourceFile,
       siblingIds: [],
       backlinkIds: [],
