@@ -22,6 +22,7 @@ import type {
   RenderContext,
 } from '../types';
 import { enrichAllTracks } from './music-meta';
+import { sanitizeHtmlSimple } from '../utils/sanitize-html-simple';
 
 export interface BuildOptions {
   dryRun?: boolean;
@@ -73,13 +74,20 @@ export class Builder {
 
     // 3. Parse the graph
     log('Parsing Logseq graph...');
-    const events = await parser.parse(this.config.logseqPath);
-    log(`Found ${events.length} events.`);
+    const parsedEvents = await parser.parse(this.config.logseqPath);
+    const hiddenEvents = parsedEvents.filter((e) => e.hidden);
+    const includeHidden = this.config.includeHidden === true;
+    const events = includeHidden ? parsedEvents : parsedEvents.filter((e) => !e.hidden);
+    log(`Found ${parsedEvents.length} events (${hiddenEvents.length} hidden, ${events.length} published).`);
+    if (includeHidden && hiddenEvents.length > 0) {
+      log('  Hidden events included by config.');
+    }
 
     if (dryRun) {
-      console.log(`\n[Dry Run] Parsed ${events.length} events:`);
+      console.log(`\n[Dry Run] Parsed ${events.length} published events${includeHidden ? ' (hidden included)' : ''}:`);
       for (const e of events) {
-        console.log(`  • ${e.date} — ${e.title} (${e.media.length} media, ${e.tags.length} tags)`);
+        const marker = e.hidden ? ' [hidden]' : '';
+        console.log(`  • ${e.date} — ${e.title}${marker} (${e.media.length} media, ${e.tags.length} tags)`);
       }
       return { events: events.length, images: 0, videos: 0, backlinks: 0, relatedPairs: 0, tags: 0, outputFiles: 0 };
     }
@@ -180,12 +188,66 @@ export class Builder {
 
     // 5. Render
     log('Rendering static site...');
+    // 5a. Read, render, and sanitize about.md if it exists at the graph root.
+    //
+    //     SECURITY PIPELINE (in order, defense in depth):
+    //
+    //     1) marked.parse() with HTML BLOCKED via custom renderer.html()
+    //        Any raw HTML written by the user directly inside about.md
+    //        (e.g. <script>, <iframe>, <p onclick=...>) is HTML-escaped into
+    //        plain text so it can never reach the output as DOM nodes.
+    //        This is our primary defense. We deliberately DO NOT rely on
+    //        marked's legacy `sanitize` option (removed in marked v6).
+    //
+    //     2) sanitizeHtmlSimple — zero-dep tag/attr allow-list parser
+    //        Secondary / belt-and-suspenders. Even if a future marked bug
+    //        leaks a tag, or a markdown construct maps to a tag we don't
+    //        want, the allow-list strips it. Handles protocol gating,
+    //        on* handler stripping, and post-processes external links to
+    //        target=_blank + rel=noopener noreferrer nofollow.
+    //
+    //     3) </script> escape — only needed because aboutHtml itself is
+    //        later injected next to <script type="application/json"> blocks;
+    //        this is a defense-in-depth guard for nested script-tag closing.
+    let aboutHtml = '';
+    const aboutMdPath = path.join(this.config.logseqPath, 'about.md');
+    if (fs.existsSync(aboutMdPath)) {
+      try {
+        const { marked, Renderer } = await import('marked');
+        // Marked v12: `Renderer` is the built-in HTML renderer base class.
+        // We keep all markdown-native token rendering (links, lists, images,
+        // emphasis, headings) and only override the `html` token emitter to
+        // escape raw HTML instead of passing it through verbatim.
+        const noHtmlRenderer = new (Renderer || marked.Renderer)();
+        const escapeHtml = (s: string): string =>
+          String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        noHtmlRenderer.html = (html: string): string => escapeHtml(html);
+        marked.setOptions({
+          breaks: true,
+          gfm: true,
+          renderer: noHtmlRenderer,
+        });
+        const raw = fs.readFileSync(aboutMdPath, 'utf-8');
+        const rawHtml = marked.parse(raw) as string;
+        const clean = sanitizeHtmlSimple(rawHtml);
+        aboutHtml = String(clean || '').replace(/<\/script/gi, '<\\/script');
+        log(`  Loaded about.md (${aboutMdPath})`);
+      } catch (e) {
+        log(`  ⚠ Failed to parse about.md: ${e}`);
+        aboutHtml = '';
+      }
+    }
     const ctx: RenderContext = {
       outputPath: this.config.outputPath,
       storage,
       config: this.config,
     };
-    await renderer.render(events, index, ctx);
+    await renderer.render(events, index, ctx, aboutHtml);
 
     // 6. Write index.json
     await storage.save('index.json', JSON.stringify(index, null, 2));
