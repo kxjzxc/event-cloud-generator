@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="event-index" style="display:none">{{ indexJson }}</div>
+  
+  <a href="index.html" class="back-home">← 返回</a>
+  
+  <div class="archive-page">
+    <header class="archive-header">
+      <h1>事件档案</h1>
+      <p>探索所有已解锁的事件</p>
+    </header>
+    
+    <div class="archive-controls">
+      <input type="text" id="archive-search" class="archive-search" placeholder="搜索事件...">
+      <div id="tag-filter" class="tag-filter"></div>
+    </div>
+    
+    <div id="archive-grid" class="archive-grid"></div>
+  </div>
+  
+  <script src="js/app.js"></script>
+</body>
+</html>

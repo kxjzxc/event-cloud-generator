@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Machine 用户使用指南</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg-card: #14141e;
+      --bg-hover: #1a1a28;
+      --bg-code: #1e1e2e;
+      --text: #e0e0e8;
+      --text-dim: #8888a0;
+      --text-bright: #f0f0f8;
+      --accent: #6c8cff;
+      --accent-glow: rgba(108, 140, 255, 0.3);
+      --accent-soft: rgba(108, 140, 255, 0.1);
+      --green: #7ec699;
+      --yellow: #e5c07b;
+      --red: #e06c75;
+      --border: #22222e;
+      --radius: 12px;
+      --serif: Georgia, 'Times New Roman', serif;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Sidebar ─────────────────── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .sidebar h3 {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+      padding-left: 0.5rem;
+    }
+
+    .sidebar ul { list-style: none; margin-bottom: 1.5rem; }
+
+    .sidebar a {
+      display: block;
+      padding: 0.35rem 0.5rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-card);
+      border-left-color: var(--accent);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-left-color: var(--accent);
+    }
+
+    /* ── Main content ────────────── */
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 3rem 0 6rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 0 4rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero p {
+      color: var(--text-dim);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .hero .badges {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-dim);
+    }
+
+    section {
+      margin-bottom: 4rem;
+      scroll-margin-top: 1rem;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 .num {
+      color: var(--accent);
+      font-size: 0.85rem;
+      font-family: var(--sans);
+      vertical-align: super;
+      margin-right: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text-bright);
+    }
+
+    p { margin-bottom: 1rem; }
+
+    ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+    li { margin-bottom: 0.4rem; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { color: var(--text-bright); }
+
+    /* ── Code blocks ─────────────── */
+    code {
+      font-family: var(--mono);
+      font-size: 0.85em;
+      background: var(--bg-code);
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--green);
+    }
+
+    pre {
+      background: var(--bg-code);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    /* Syntax highlight (simple) */
+    .tok-comment { color: var(--text-dim); }
+    .tok-keyword { color: var(--accent); }
+    .tok-string { color: var(--green); }
+    .tok-number { color: var(--yellow); }
+    .tok-fn { color: #61afef; }
+
+    /* ── Callouts ────────────────── */
+    .callout {
+      border-left: 3px solid;
+      padding: 0.8rem 1.2rem;
+      margin: 1rem 0;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+    }
+
+    .callout-info {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .callout-warn {
+      border-color: var(--yellow);
+      background: rgba(229, 192, 123, 0.08);
+    }
+
+    .callout-danger {
+      border-color: var(--red);
+      background: rgba(224, 108, 117, 0.08);
+    }
+
+    .callout-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .callout-info .callout-title { color: var(--accent); }
+    .callout-warn .callout-title { color: var(--yellow); }
+    .callout-danger .callout-title { color: var(--red); }
+
+    /* ── Tables ──────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 0.6rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-dim);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td code { font-size: 0.8em; }
+
+    /* ── Cards ───────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      background: var(--bg-hover);
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card h4 {
+      font-size: 0.95rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-bright);
+    }
+
+    .card p {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin: 0;
+    }
+
+    /* ── Steps ───────────────────── */
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .steps > li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 2.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .steps > li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0.1rem;
+      width: 1.75rem;
+      height: 1.75rem;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Mock UI ─────────────────── */
+    .mock-ui {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 1.5rem 0;
+    }
+
+    .mock-browser-bar {
+      background: var(--bg-hover);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mock-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50;
+    }
+
+    .mock-dot:nth-child(1) { background: #ff5f57; }
+    .mock-dot:nth-child(2) { background: #febc2e; }
+    .mock-dot:nth-child(3) { background: #28c840; }
+
+    .mock-url {
+      flex: 1;
+      margin-left: 0.5rem;
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 0.2rem 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .mock-body {
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .mock-launch-btn {
+      display: inline-block;
+      padding: 0.8rem 2.5rem;
+      border: 1px solid var(--accent);
+      border-radius: 50px;
+      color: var(--text);
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .mock-stats {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* ── Flow diagram ────────────── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0;
+    }
+
+    .flow-node {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+
+    .flow-node.accent {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .flow-arrow {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+
+    /* ── FAQ ─────────────────────── */
+    .faq-item {
+      margin-bottom: 1.5rem;
+    }
+
+    .faq-q {
+      font-weight: 600;
+      color: var(--text-bright);
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .faq-q::before {
+      content: 'Q: ';
+      color: var(--accent);
+    }
+
+    .faq-a::before {
+      content: 'A: ';
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .faq-a {
+      color: var(--text);
+      padding-left: 0;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .layout { padding: 0 1rem; }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <h3>指南目录</h3>
+      <ul>
+        <li><a href="#intro">什么是 Time Machine</a></li>
+        <li><a href="#quickstart">三分钟上手</a></li>
+        <li><a href="#logseq">在 Logseq 中写内容</a></li>
+        <li><a href="#website">网站功能</a></li>
+        <li><a href="#config">配置说明</a></li>
+        <li><a href="#cli">CLI 命令</a></li>
+        <li><a href="#media">图片与视频</a></li>
+        <li><a href="#deploy">部署上线</a></li>
+        <li><a href="#faq">常见问题</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <div class="hero">
+        <h1>Time Machine</h1>
+        <p>静态记忆网站生成器 · 用户使用指南</p>
+        <div class="badges">
+          <span class="badge">v0.1.0</span>
+          <span class="badge">Logseq → 静态网站</span>
+          <span class="badge">TypeScript</span>
+          <span class="badge">零后端</span>
+        </div>
+      </div>
+
+      <!-- ════════ 1. 什么是 Time Machine ════════ -->
+      <section id="intro">
+        <h2><span class="num">01</span>什么是 Time Machine</h2>
+
+        <p>Time Machine 是一个<strong>静态记忆网站生成器</strong>。它读取你的 Logseq Graph 数据，编译成一个可浏览的静态网站，让你以随机探索的方式重新遇见过去的自己。</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">核心理念</div>
+          Time Machine <strong>不是博客</strong>，而是一个个人时光机。首页只有一个入口——启动时光机，随机穿越到一段记忆。没有时间轴、没有日历、没有主动检索。记忆需要被「解锁」后才能在记忆馆中回顾。
+        </div>
+
+        <h3>它适合谁？</h3>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">📝</div>
+            <h4>Logseq 用户</h4>
+            <p>已经在用 Logseq 记录生活和想法，想要一个更沉浸的回顾方式</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎲</div>
+            <h4>喜欢随机性的人</h4>
+            <p>享受被随机推送一段旧记忆的感觉，而非按时间线浏览</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔒</div>
+            <h4>注重隐私的人</h4>
+            <p>纯静态输出，无后端、无数据库、无追踪，部署在哪都行</p>
+          </div>
+        </div>
+
+        <h3>数据流</h3>
+        <div class="flow">
+          <div class="flow-node">Logseq Graph</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node accent">Parser</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">Events</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node accent">ImageProcessor</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node accent">Renderer</div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-node">静态 HTML</div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-dim);">单向流动，Time Machine 永远不修改你的 Logseq 数据。</p>
+      </section>
+
+      <!-- ════════ 2. 三分钟上手 ════════ -->
+      <section id="quickstart">
+        <h2><span class="num">02</span>三分钟上手</h2>
+
+        <h3>前置要求</h3>
+        <ul>
+          <li>Node.js 22+（推荐使用 <code>nvm</code> 或 <code>fnm</code> 管理）</li>
+          <li>一个 Logseq Graph（至少包含 <code>pages/</code> 目录和一些 <code>.md</code> 文件）</li>
+        </ul>
+
+        <h3>方式一：从零开始（推荐）</h3>
+        <p>如果你还没有项目目录，用 <code>tm init</code> 一键搭建框架：</p>
+        <ol class="steps">
+          <li>
+            <strong>初始化项目</strong>
+            <pre><code><span class="tok-comment"># 在任意位置创建新项目</span>
+tm init my-memories
+
+<span class="tok-comment"># 进入项目目录</span>
+cd my-memories</code></pre>
+            <p>会自动生成 <code>config.json</code>、<code>.gitignore</code>、<code>graph/</code> 目录结构和一个示例页面。</p>
+          </li>
+          <li>
+            <strong>放入你的内容</strong>
+            <p>把 Logseq 的页面（<code>.md</code> 文件）放到 <code>graph/pages/</code>，图片视频放到 <code>graph/assets/</code>。或者直接修改 <code>config.json</code> 的 <code>logseqPath</code> 指向你的 Logseq Graph：</p>
+            <pre><code>{
+  "logseqPath": "D:/my-logseq-graph",
+  "outputPath": "./dist"
+}</code></pre>
+          </li>
+          <li>
+            <strong>构建 + 预览</strong>
+            <pre><code>tm s -o   <span class="tok-comment"># 自动 build + watch + 开浏览器</span></code></pre>
+          </li>
+        </ol>
+
+        <h3>方式二：在现有项目中配置</h3>
+        <p>如果你已经克隆了 Time Machine 仓库：</p>
+        <ol class="steps">
+          <li>
+            <strong>安装依赖并编译</strong>
+            <pre><code>npm install
+npm run build</code></pre>
+          </li>
+          <li>
+            <strong>放入你的 Logseq 数据</strong>
+            <p>将你的 Logseq Graph 数据放到 <code>graph/</code> 目录，或修改 <code>config.json</code> 中的 <code>logseqPath</code> 指向你的 Graph 路径。</p>
+            <pre><code><span class="tok-comment"># 方式一：复制到 graph/ 目录</span>
+cp -r ~/my-logseq-graph/* graph/
+
+<span class="tok-comment"># 方式二：修改 config.json 指向你的路径</span>
+<span class="tok-comment"># "logseqPath": "D:/my-logseq-graph"</span></code></pre>
+            <div class="callout callout-info">
+              一个典型的 Logseq Graph 结构：
+              <pre style="margin: 0.5rem 0 0;"><code>graph/
+├── pages/          <span class="tok-comment"># ← 这里的每个 .md 文件 = 一个 Event</span>
+│   ├── 涩谷.md
+│   ├── 东京塔.md
+│   └── ...
+├── journals/       <span class="tok-comment"># ← 日记，不作为 Event</span>
+├── assets/         <span class="tok-comment"># ← 图片、视频等附件</span>
+│   ├── photo1.jpg
+│   └── video.mp4
+└── logseq/
+    └── config.edn</code></pre>
+            </div>
+          </li>
+          <li>
+            <strong>构建静态网站</strong>
+            <pre><code><span class="tok-comment"># 方式一：短命令（推荐，Hexo 风格）</span>
+npm run g
+
+<span class="tok-comment"># 方式二：直接调用 CLI</span>
+tm g
+
+<span class="tok-comment"># 方式三：完整命令名</span>
+tm generate</code></pre>
+            <p>看到类似输出就说明成功了：</p>
+            <pre><code>⚙  Time Machine — Generate
+   Graph:  D:\...\graph
+   Output: D:\...\dist
+   Storage: local
+
+✓ Build complete.
+
+  Summary:
+    Events:     14
+    Images:     23
+    Tags:       8
+    Backlinks:  5
+    Related:    12 pairs
+    Output:     42 files
+
+    → Run <span class="tok-string">`tm s`</span> to view the site.</code></pre>
+          </li>
+          <li>
+            <strong>本地预览</strong>
+            <pre><code><span class="tok-comment"># 启动服务器（自动 build + watch，Hexo 风格）</span>
+npm run s
+
+<span class="tok-comment"># 自动打开浏览器</span>
+tm s -o
+
+<span class="tok-comment"># 指定端口</span>
+tm s -p 8080</code></pre>
+            <p>服务器会先自动构建，然后监听文件变化。修改 Logseq 内容后刷新浏览器即可看到更新，无需重启。</p>
+          </li>
+        </ol>
+
+        <div class="mock-ui">
+          <div class="mock-browser-bar">
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-dot"></div>
+            <div class="mock-url">http://localhost:3000</div>
+          </div>
+          <div class="mock-body">
+            <div style="font-family: var(--serif); font-size: 1.8rem; color: var(--text-dim); margin-bottom: 0.3rem;">Time Machine</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 2rem;">随机穿越，遇见过去的自己</div>
+            <div class="mock-launch-btn">启动时光机</div>
+            <div class="mock-stats">14 段记忆 · 已解锁 0 段</div>
+          </div>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">提示</div>
+          <code>tm s</code>（server）默认会先自动 build 再启动服务器，并开启 watch 模式。修改 Logseq 内容后刷新浏览器即可看到更新，无需重启。如果只想用已有的 dist/ 目录，加 <code>--no-build</code>。
+        </div>
+      </section>
+
+      <!-- ════════ 3. 在 Logseq 中写内容 ════════ -->
+      <section id="logseq">
+        <h2><span class="num">03</span>在 Logseq 中写内容</h2>
+
+        <p>Time Machine 的最小单位不是 Journal（日记），而是 <strong>Event（事件）</strong>。当前规则：<code>pages/</code> 目录下每个 <code>.md</code> 文件就是一个 Event。</p>
+
+        <h3>页面结构</h3>
+        <p>一个标准的 Logseq 页面长这样：</p>
+        <pre><code><span class="tok-comment"># 页面标题（可选，会被自动识别为文件名）</span>
+
+date:: 2024-03-15
+tags:: 旅行, 日本
+
+这是一段自由文本内容。
+
+可以写 [[双链]] 指向其他页面。
+可以用 #标签 标记关键词。
+
+![](../assets/photo.jpg)           <span class="tok-comment"># Markdown 图片语法</span>
+![[video.mp4]]                      <span class="tok-comment"># Logseq Embed 视频语法</span>
+
+- 列表项也是支持的
+  - 嵌套列表
+  - 更多内容</code></pre>
+
+        <h3>支持的内容类型</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>类型</th>
+              <th>语法</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>页面标题</td>
+              <td><code># 标题</code> 或文件名</td>
+              <td>文件名即标题，H1 标题如果与文件名相同会被自动跳过</td>
+            </tr>
+            <tr>
+              <td>日期</td>
+              <td><code>date:: 2024-03-15</code></td>
+              <td>页面属性，无则取文件最后修改时间</td>
+            </tr>
+            <tr>
+              <td>标签</td>
+              <td><code>tags:: 旅行, 日本</code> 或 <code>#旅行</code></td>
+              <td>两种写法都支持，会合并去重</td>
+            </tr>
+            <tr>
+              <td>双链</td>
+              <td><code>[[涩谷]]</code></td>
+              <td>指向另一个页面。如果目标页面存在，渲染为可点击链接；不存在则显示为灰色</td>
+            </tr>
+            <tr>
+              <td>图片</td>
+              <td><code>![](../assets/photo.jpg)</code> 或 <code>![[photo.jpg]]</code></td>
+              <td>自动提取到图片画廊，正文不再重复显示</td>
+            </tr>
+            <tr>
+              <td>视频</td>
+              <td><code>![[video.mp4]]</code></td>
+              <td>支持 .mp4 / .mov / .webm 格式</td>
+            </tr>
+            <tr>
+              <td>列表</td>
+              <td><code>- 列表项</code></td>
+              <td>支持嵌套，自动渲染为 HTML 列表</td>
+            </tr>
+            <tr>
+              <td>属性</td>
+              <td><code>key:: value</code></td>
+              <td>Logseq 属性语法，<code>date</code> 和 <code>tags</code> 会被解析</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-info">
+          <div class="callout-title">最佳实践</div>
+          <ul style="margin: 0.5rem 0 0;">
+            <li>给每个页面加上 <code>date::</code> 属性，这样日期更准确</li>
+            <li>用 <code>tags::</code> 或 <code>#标签</code> 标记主题，Time Machine 会自动计算「相关记忆」</li>
+            <li>多用 <code>[[双链]]</code> 连接相关页面，Time Machine 会自动生成反向链接（Backlinks）</li>
+            <li>图片放在 <code>assets/</code> 目录，用 <code>![[文件名]]</code> 引用</li>
+          </ul>
+        </div>
+
+        <h3>会被自动跳过的页面</h3>
+        <p>以下 Logseq 内部页面不会被解析为 Event：</p>
+        <ul>
+          <li><code>contents.md</code> — Logseq 目录页</li>
+          <li><code>whiteboards.md</code> — Logseq 白板页</li>
+          <li><code>journals/</code> 目录下的所有日记文件</li>
+        </ul>
+      </section>
+
+      <!-- ════════ 4. 网站功能 ════════ -->
+      <section id="website">
+        <h2><span class="num">04</span>网站功能</h2>
+
+        <h3>首页</h3>
+        <p>首页只有一个按钮：<strong>启动时光机</strong>。没有导航栏、没有搜索框、没有文章列表。页面底部显示总记忆数和已解锁数。</p>
+        <p>点击按钮后，系统会随机选取一段记忆。策略：<strong>优先选取尚未解锁的记忆</strong>，全部解锁后完全随机。</p>
+
+        <h3>Event 页面</h3>
+        <p>每段记忆以沉浸式长页面呈现，包含：</p>
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-icon">📅</div>
+            <h4>日期 + 标题</h4>
+            <p>页面顶部展示，日期高亮显示</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📄</div>
+            <h4>正文内容</h4>
+            <p>Markdown 渲染为 HTML，双链解析为可点击链接</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🖼️</div>
+            <h4>图片画廊</h4>
+            <p>所有图片自动提取到底部画廊，点击可放大查看</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🎬</div>
+            <h4>视频播放器</h4>
+            <p>内嵌视频播放器，支持原生控制</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🏷️</div>
+            <h4>标签</h4>
+            <p>所有标签以圆角标签形式展示</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔗</div>
+            <h4>同一天 / 被引用 / 相关记忆</h4>
+            <p>底部展示关联记忆，点击可跳转</p>
+          </div>
+        </div>
+
+        <h3>关联记忆的三个维度</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>维度</th>
+              <th>含义</th>
+              <th>计算方式</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>同一天</td>
+              <td>日期相同的其他 Event</td>
+              <td>按 <code>date</code> 字段匹配</td>
+            </tr>
+            <tr>
+              <td>被引用 (Backlinks)</td>
+              <td>哪些页面通过 <code>[[双链]]</code> 引用了当前页面</td>
+              <td>Builder 扫描所有 Event 的 links 字段，建立反向索引</td>
+            </tr>
+            <tr>
+              <td>相关记忆</td>
+              <td>共享标签的其他 Event</td>
+              <td>按共享标签数量排序，取 Top 5</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>随机与解锁机制</h3>
+        <ul>
+          <li><strong>解锁触发</strong>：第一次访问某个 Event 页面时自动解锁（通过 <code>data-event-id</code> 检测）</li>
+          <li><strong>存储位置</strong>：解锁状态保存在浏览器的 <code>localStorage</code> 中，key 为 <code>tm_unlocked</code></li>
+          <li><strong>随机策略</strong>：优先抽取未解锁的 Event；全部解锁后完全随机</li>
+          <li><strong>「再次穿越」按钮</strong>：Event 页面底部的按钮，点击后随机跳转到另一段记忆</li>
+        </ul>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">注意</div>
+          解锁状态存储在浏览器本地。如果换设备、换浏览器或清除浏览数据，解锁记录会丢失。这是设计决策——Time Machine 不依赖任何后端。
+        </div>
+
+        <h3>记忆馆 (Archive)</h3>
+        <p>记忆馆页面展示所有已解锁的 Event，支持：</p>
+        <ul>
+          <li><strong>搜索</strong>：按标题模糊搜索</li>
+          <li><strong>标签过滤</strong>：点击标签 chip 切换过滤</li>
+          <li><strong>排序</strong>：默认按日期倒序</li>
+          <li><strong>卡片展示</strong>：每张卡片显示日期、标题和标签</li>
+        </ul>
+        <p>只有<strong>已解锁</strong>的记忆才会出现在记忆馆中。未解锁的记忆需要通过「启动时光机」随机遇到后才会出现。</p>
+      </section>
+
+      <!-- ════════ 5. 配置说明 ════════ -->
+      <section id="config">
+        <h2><span class="num">05</span>配置说明</h2>
+
+        <p>所有配置在项目根目录的 <code>config.json</code> 文件中：</p>
+
+        <pre><code>{
+  <span class="tok-keyword">"logseqPath"</span>: <span class="tok-string">"./graph"</span>,
+  <span class="tok-keyword">"outputPath"</span>: <span class="tok-string">"./dist"</span>,
+  <span class="tok-keyword">"storage"</span>: <span class="tok-string">"local"</span>,
+  <span class="tok-keyword">"media"</span>: {
+    <span class="tok-keyword">"thumbnailSize"</span>: <span class="tok-number">200</span>,
+    <span class="tok-keyword">"previewSize"</span>: <span class="tok-number">800</span>
+  }
+}</code></pre>
+
+        <table>
+          <thead>
+            <tr>
+              <th>字段</th>
+              <th>类型</th>
+              <th>默认值</th>
+              <th>说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>logseqPath</code></td>
+              <td>string</td>
+              <td><code>"./graph"</code></td>
+              <td>Logseq Graph 根目录路径，支持相对路径和绝对路径</td>
+            </tr>
+            <tr>
+              <td><code>outputPath</code></td>
+              <td>string</td>
+              <td><code>"./dist"</code></td>
+              <td>静态网站输出目录</td>
+            </tr>
+            <tr>
+              <td><code>storage</code></td>
+              <td>string</td>
+              <td><code>"local"</code></td>
+              <td>存储插件：<code>local</code>（本地文件系统）/ <code>r2</code>（Cloudflare R2，占位）/ <code>oss</code>（阿里云 OSS，占位）</td>
+            </tr>
+            <tr>
+              <td><code>media.thumbnailSize</code></td>
+              <td>number</td>
+              <td><code>200</code></td>
+              <td>缩略图宽度（像素），用于列表和卡片展示</td>
+            </tr>
+            <tr>
+              <td><code>media.previewSize</code></td>
+              <td>number</td>
+              <td><code>800</code></td>
+              <td>预览图宽度（像素），用于点击放大时展示</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-info">
+          <div class="callout-title">init 命令</div>
+          如果你想从头创建一个新的配置文件，可以使用：<code>npx node lib/cli/index.js init --graph ./my-graph --output ./dist</code>
+        </div>
+      </section>
+
+      <!-- ════════ 6. CLI 命令 ════════ -->
+      <section id="cli">
+        <h2><span class="num">06</span>CLI 命令参考</h2>
+
+        <p>Time Machine CLI 采用 Hexo 风格的短命令设计，上手即用。</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">命令速查（对照 Hexo）</div>
+          <table style="margin: 0.5rem 0 0;">
+            <thead>
+              <tr><th>Hexo</th><th>Time Machine</th><th>npm script</th><th>功能</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>hexo g</code></td><td><code>tm g</code></td><td><code>npm run g</code></td><td>生成静态文件</td></tr>
+              <tr><td><code>hexo s</code></td><td><code>tm s</code></td><td><code>npm run s</code></td><td>本地预览（自动 build + watch）</td></tr>
+              <tr><td><code>hexo d</code></td><td><code>tm d</code></td><td><code>npm run d</code></td><td>部署</td></tr>
+              <tr><td><code>hexo clean</code></td><td><code>tm clean</code></td><td><code>npm run clean</code></td><td>清理输出目录</td></tr>
+              <tr><td><code>hexo new</code></td><td><code>tm new</code></td><td><code>npm run new</code></td><td>创建新页面</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>generate | g — 生成静态站点</h3>
+        <pre><code>tm generate [options]
+<span class="tok-comment"># 简写</span>
+tm g [options]</code></pre>
+        <table>
+          <thead>
+            <tr><th>选项</th><th>简写</th><th>默认值</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--watch</code></td><td><code>-w</code></td><td>—</td><td>监听文件变化，自动重新构建</td></tr>
+            <tr><td><code>--dry-run</code></td><td><code>-d</code></td><td>—</td><td>仅解析不生成输出，用于检查 Event 数量</td></tr>
+            <tr><td><code>--verbose</code></td><td><code>-v</code></td><td>—</td><td>详细日志输出</td></tr>
+            <tr><td><code>--config &lt;path&gt;</code></td><td><code>-c</code></td><td><code>config.json</code></td><td>指定配置文件路径</td></tr>
+            <tr><td><code>--storage &lt;name&gt;</code></td><td><code>-s</code></td><td>—</td><td>覆盖配置中的存储插件</td></tr>
+          </tbody>
+        </table>
+        <pre><code><span class="tok-comment"># 标准构建</span>
+tm g
+
+<span class="tok-comment"># 监听模式：修改 Logseq 内容后自动重建</span>
+tm g -w
+
+<span class="tok-comment"># 详细日志</span>
+tm g -v
+
+<span class="tok-comment"># 干跑模式：只看看解析了多少 Event，不生成文件</span>
+tm g -d
+
+<span class="tok-comment"># 使用自定义配置文件</span>
+tm g -c config-prod.json</code></pre>
+
+        <h3>server | s — 本地预览</h3>
+        <pre><code>tm server [options]
+<span class="tok-comment"># 简写</span>
+tm s [options]</code></pre>
+        <p>类似 <code>hexo s</code>，默认会<strong>先自动 build 再启动服务器</strong>，并开启 watch 模式。修改 Logseq 内容后刷新浏览器即可看到更新。</p>
+        <table>
+          <thead>
+            <tr><th>选项</th><th>简写</th><th>默认值</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--port &lt;number&gt;</code></td><td><code>-p</code></td><td><code>3000</code></td><td>本地服务器端口</td></tr>
+            <tr><td><code>--open</code></td><td><code>-o</code></td><td>—</td><td>自动打开浏览器</td></tr>
+            <tr><td><code>--no-build</code></td><td>—</td><td>—</td><td>跳过初始构建，直接用已有 dist/</td></tr>
+            <tr><td><code>--no-watch</code></td><td>—</td><td>—</td><td>关闭文件监听</td></tr>
+            <tr><td><code>--config &lt;path&gt;</code></td><td><code>-c</code></td><td><code>config.json</code></td><td>指定配置文件路径</td></tr>
+          </tbody>
+        </table>
+        <pre><code><span class="tok-comment"># 最常用：自动 build + watch + 预览</span>
+tm s
+
+<span class="tok-comment"># 自动打开浏览器</span>
+tm s -o
+
+<span class="tok-comment"># 指定端口</span>
+tm s -p 8080
+
+<span class="tok-comment"># 只预览已有的 dist/，不重新 build</span>
+tm s --no-build</code></pre>
+
+        <h3>clean | cl — 清理输出</h3>
+        <pre><code>tm clean [options]
+<span class="tok-comment"># 简写</span>
+tm cl</code></pre>
+        <p>删除整个 <code>dist/</code> 目录（包括缓存的图片）。类似 <code>hexo clean</code>。下次 <code>tm g</code> 会从头处理所有图片。</p>
+        <pre><code><span class="tok-comment"># 清理后重新构建（图片会全部重新处理）</span>
+tm clean && tm g</code></pre>
+
+        <h3>new | n — 创建新页面</h3>
+        <pre><code>tm new &lt;title&gt; [options]
+<span class="tok-comment"># 简写</span>
+tm n &lt;title&gt;</code></pre>
+        <p>在 Logseq Graph 的 <code>pages/</code> 目录下创建一个新页面，自动填充模板。</p>
+        <table>
+          <thead>
+            <tr><th>选项</th><th>简写</th><th>默认值</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--date &lt;date&gt;</code></td><td><code>-d</code></td><td>今天</td><td>指定日期（YYYY-MM-DD）</td></tr>
+            <tr><td><code>--config &lt;path&gt;</code></td><td><code>-c</code></td><td><code>config.json</code></td><td>指定配置文件路径</td></tr>
+          </tbody>
+        </table>
+        <pre><code><span class="tok-comment"># 创建新页面</span>
+tm new "东京塔"
+
+<span class="tok-comment"># 指定日期</span>
+tm new "东京塔" -d 2024-03-15</code></pre>
+        <p>生成的模板：</p>
+        <pre><code># 东京塔
+
+date:: 2024-03-15
+tags::
+
+Write your content here.
+
+- Use [[double-bracket]] to link other pages
+- Use #tags to add tags inline
+- Use ![](../assets/photo.jpg) to embed images</code></pre>
+
+        <h3>deploy | d — 部署（占位）</h3>
+        <pre><code>tm deploy [options]
+<span class="tok-comment"># 简写</span>
+tm d [options]</code></pre>
+        <p>部署前会自动 build（除非 <code>--no-build</code>）。目前为占位实现，会输出手动部署指引。</p>
+        <table>
+          <thead>
+            <tr><th>选项</th><th>简写</th><th>默认值</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--platform &lt;name&gt;</code></td><td><code>-p</code></td><td><code>github-pages</code></td><td>部署平台</td></tr>
+            <tr><td><code>--no-build</code></td><td>—</td><td>—</td><td>跳过构建直接部署</td></tr>
+            <tr><td><code>--config &lt;path&gt;</code></td><td><code>-c</code></td><td><code>config.json</code></td><td>指定配置文件路径</td></tr>
+          </tbody>
+        </table>
+
+        <h3>init — 初始化项目</h3>
+        <pre><code>tm init [folder] [options]</code></pre>
+        <p>在空文件夹中搭建完整的 Time Machine 项目框架，类似 <code>hexo init</code>。</p>
+        <table>
+          <thead>
+            <tr><th>参数/选项</th><th>简写</th><th>默认值</th><th>说明</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>&lt;folder&gt;</code></td><td>—</td><td>当前目录</td><td>目标文件夹（不存在则创建）</td></tr>
+            <tr><td><code>--graph &lt;path&gt;</code></td><td><code>-g</code></td><td><code>./graph</code></td><td>Graph 目录路径</td></tr>
+            <tr><td><code>--output &lt;path&gt;</code></td><td><code>-o</code></td><td><code>./dist</code></td><td>输出目录路径</td></tr>
+            <tr><td><code>--force</code></td><td><code>-f</code></td><td>—</td><td>覆盖已存在的文件</td></tr>
+          </tbody>
+        </table>
+        <p>生成的项目结构：</p>
+        <pre><code>my-project/
+├── config.json          <span class="tok-comment"># 配置文件</span>
+├── .gitignore           <span class="tok-comment"># Git 忽略规则</span>
+└── graph/
+    ├── pages/           <span class="tok-comment"># ← 你的内容 (.md 文件 = Event)</span>
+    │   └── Welcome.md   <span class="tok-comment"># ← 示例页面</span>
+    ├── journals/        <span class="tok-comment"># ← Logseq 日记（可选）</span>
+    └── assets/          <span class="tok-comment"># ← 图片、视频</span>
+        └── welcome.svg  <span class="tok-comment"># ← 示例图片</span></code></pre>
+        <p>示例：</p>
+        <pre><code><span class="tok-comment"># 在当前目录初始化</span>
+tm init
+
+<span class="tok-comment"># 创建新项目文件夹</span>
+tm init my-memories
+
+<span class="tok-comment"># 指定 graph 和 output 路径</span>
+tm init my-memories -g ./data -o ./public
+
+<span class="tok-comment"># 强制覆盖已有文件</span>
+tm init --force</code></pre>
+        <div class="callout callout-info">
+          <div class="callout-title">完整流程</div>
+          <pre style="margin: 0.5rem 0 0;"><code>tm init my-memories   <span class="tok-comment"># 1. 搭建框架</span>
+cd my-memories
+tm s -o               <span class="tok-comment"># 2. 构建 + 预览 + 自动开浏览器</span></code></pre>
+        </div>
+
+        <h3>npm scripts 快捷方式</h3>
+        <p>项目 <code>package.json</code> 中已配置以下快捷脚本：</p>
+        <table>
+          <thead>
+            <tr><th>命令</th><th>等价于</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>npm run g</code></td><td><code>tm generate</code></td></tr>
+            <tr><td><code>npm run s</code></td><td><code>tm server</code></td></tr>
+            <tr><td><code>npm run d</code></td><td><code>tm deploy</code></td></tr>
+            <tr><td><code>npm run clean</code></td><td><code>tm clean</code></td></tr>
+            <tr><td><code>npm run new -- "标题"</code></td><td><code>tm new "标题"</code></td></tr>
+            <tr><td><code>npm run build</code></td><td><code>tsc</code>（编译 TypeScript）</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ════════ 7. 图片与视频 ════════ -->
+      <section id="media">
+        <h2><span class="num">07</span>图片与视频处理</h2>
+
+        <h3>图片处理</h3>
+        <p>Builder 使用 <code>sharp</code> 库自动处理图片，<strong>不修改原始文件</strong>。每张图片会生成两个版本：</p>
+
+        <table>
+          <thead>
+            <tr><th>输出文件</th><th>尺寸</th><th>格式</th><th>用途</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>thumbnail.webp</code></td><td>200px 宽</td><td>WebP</td><td>列表 / 卡片 / 画廊缩略图</td></tr>
+            <tr><td><code>preview.webp</code></td><td>800px 宽</td><td>WebP</td><td>点击放大时展示的高清图</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-info">
+          <div class="callout-title">增量处理</div>
+          Builder 在清理输出目录时会<strong>保留 <code>assets/</code> 目录</strong>。已经生成过 WebP 的图片不会重复处理，大幅加快重复构建速度。如果你修改了原始图片，删除 <code>dist/assets/</code> 下对应的 WebP 文件即可触发重新处理。
+        </div>
+
+        <h3>图片引用方式</h3>
+        <p>Time Machine 支持两种图片引用语法：</p>
+        <pre><code><span class="tok-comment"># 方式一：Markdown 标准语法</span>
+![](../assets/photo.jpg)
+![描述文字](../assets/photo.jpg)
+
+<span class="tok-comment"># 方式二：Logseq Embed 语法</span>
+![[photo.jpg]]
+![[../assets/photo.jpg]]</code></pre>
+        <p>两种语法都会被识别，图片会从正文中提取到底部画廊统一展示。</p>
+
+        <h3>视频处理</h3>
+        <p>视频文件（<code>.mp4</code> / <code>.mov</code> / <code>.webm</code>）不做转码，直接复制到 <code>dist/assets/videos/</code> 目录。引用方式：</p>
+        <pre><code>![[video.mp4]]
+![[../assets/clip.mov]]</code></pre>
+        <p>视频会在页面底部以原生 HTML5 <code>&lt;video&gt;</code> 播放器展示，支持播放控制。</p>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">注意</div>
+          视频文件通常较大，部署时请确保目标平台支持大文件上传。建议对视频进行预压缩（如 HandBrake 压缩为 H.264 + 720p）。
+        </div>
+      </section>
+
+      <!-- ════════ 8. 部署 ════════ -->
+      <section id="deploy">
+        <h2><span class="num">08</span>部署上线</h2>
+
+        <p>构建完成后，<code>dist/</code> 目录就是你的静态网站。可以部署到任意静态托管平台。</p>
+
+        <h3>GitHub Pages</h3>
+        <pre><code><span class="tok-comment"># 1. 将 dist/ 内容推送到 gh-pages 分支</span>
+cd dist
+git init
+git add -A
+git commit -m <span class="tok-string">"deploy: update site"</span>
+git push origin gh-pages --force
+
+<span class="tok-comment"># 2. 在 GitHub 仓库 Settings → Pages 中选择 gh-pages 分支</span></code></pre>
+
+        <h3>Cloudflare Pages</h3>
+        <pre><code><span class="tok-comment"># 安装 wrangler CLI</span>
+npm install -g wrangler
+
+<span class="tok-comment"># 部署 dist/ 目录</span>
+wrangler pages deploy dist --project-name time-machine</code></pre>
+
+        <h3>Vercel</h3>
+        <pre><code><span class="tok-comment"># 安装 Vercel CLI</span>
+npm install -g vercel
+
+<span class="tok-comment"># 在项目根目录执行</span>
+vercel --prod</code></pre>
+
+        <h3>Netlify</h3>
+        <pre><code><span class="tok-comment"># 拖拽 dist/ 到 Netlify 的拖拽部署区域</span>
+<span class="tok-comment"># 或使用 CLI</span>
+npm install -g netlify-cli
+netlify deploy --prod --dir=dist</code></pre>
+
+        <h3>Nginx / 自建服务器</h3>
+        <pre><code><span class="tok-comment"># 将 dist/ 目录复制到服务器</span>
+scp -r dist/ user@server:/var/www/time-machine/
+
+<span class="tok-comment"># Nginx 配置示例</span>
+server {
+    listen 80;
+    server_name time-machine.example.com;
+    root /var/www/time-machine;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">CI/CD 自动化</div>
+          你可以配置 GitHub Actions 在推送 Logseq 数据更新后自动构建并部署。基本流程：<code>push graph/ 更新</code> → <code>npm install && npm run build && npm run g</code> → <code>部署 dist/</code>。
+        </div>
+      </section>
+
+      <!-- ════════ 9. FAQ ════════ -->
+      <section id="faq">
+        <h2><span class="num">09</span>常见问题</h2>
+
+        <div class="faq-item">
+          <div class="faq-q">tm g 后显示 Events: 0？</div>
+          <div class="faq-a">检查 <code>config.json</code> 中的 <code>logseqPath</code> 是否指向正确的 Graph 目录。确认该目录下有 <code>pages/</code> 文件夹，且其中包含 <code>.md</code> 文件。可以用 <code>tm g -d</code>（dry-run）查看解析详情。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">图片显示不出来？</div>
+          <div class="faq-a">确认图片文件确实存在于 <code>assets/</code> 目录。Time Machine 会尝试两种路径解析方式：先在 Graph 根目录查找，再在 <code>assets/</code> 子目录查找。如果图片路径包含 <code>../</code> 前缀，会被自动剥离后重新解析。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">双链点击后跳转到错误页面？</div>
+          <div class="faq-a">双链 <code>[[涩谷]]</code> 会尝试匹配 <code>pages/涩谷.md</code> 对应的 Event。如果目标页面不存在，会显示为灰色文字（不可点击）。确保双链文本与页面文件名完全一致（大小写不敏感）。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">换了浏览器/设备后解锁记录消失了？</div>
+          <div class="faq-a">这是预期行为。解锁状态存储在浏览器 <code>localStorage</code> 中，不跨设备同步。Time Machine 的设计理念是无后端、无追踪——解锁记录是个人浏览痕迹，不属于数据本身。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">修改了 Logseq 内容后怎么更新网站？</div>
+          <div class="faq-a">最简单的方式：用 <code>tm s</code> 启动服务器，它默认开启 watch 模式，修改文件后刷新浏览器即可。如果不用 watch，手动 <code>tm g</code> 重新构建即可。Builder 会清理旧的 HTML 文件但保留 <code>assets/</code> 目录（增量图片处理），所以重复构建很快。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">tm s 和 tm g -w 有什么区别？</div>
+          <div class="faq-a"><code>tm s</code> = build + serve + watch 三合一，启动后既能预览又能自动重建。<code>tm g -w</code> = 只 build + watch，不启动服务器。如果你需要配合自己的 HTTP 服务器（如 nginx），用 <code>tm g -w</code>；如果只是本地预览，直接 <code>tm s</code>。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">如何强制重新处理所有图片？</div>
+          <div class="faq-a">执行 <code>tm clean</code> 删除整个 <code>dist/</code> 目录（包括缓存的 WebP 图片），然后 <code>tm g</code> 重新构建。这会从头处理所有图片。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">能不能把日记 (journals) 也作为 Event？</div>
+          <div class="faq-a">当前版本不支持。Journal 文件不作为 Event 来源。如果你想展示日记内容，建议在 Logseq 中为每条日记创建一个对应的 Page，或者修改 Parser 源码（<code>src/parsers/logseq/parser.ts</code>）来扩展解析逻辑。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">支持 Obsidian 吗？</div>
+          <div class="faq-a">当前仅支持 Logseq。Parser 是插件化的，未来可以添加 Obsidian Parser。由于 Obsidian 也使用 Markdown + 双链语法，适配工作量不大。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">如何自定义网站样式？</div>
+          <div class="faq-a">网站的 CSS/JS/HTML 模板都在 <code>src/renderers/default/templates.ts</code> 中。你可以直接修改这个文件，然后重新 <code>npm run build && tm g</code>。Renderer 也是插件化的，未来可以开发自定义主题 Renderer。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">build 报错 "sharp" 相关错误？</div>
+          <div class="faq-a"><code>sharp</code> 是原生模块，可能需要根据你的操作系统和 Node.js 版本重新编译。尝试 <code>npm rebuild sharp</code>。如果仍然失败，请检查 Node.js 版本是否 >= 22。</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Sidebar active link on scroll
+    (function() {
+      var sections = document.querySelectorAll('section[id]');
+      var links = document.querySelectorAll('.sidebar a');
+
+      function onScroll() {
+        var scrollY = window.scrollY;
+        var current = '';
+        sections.forEach(function(s) {
+          if (scrollY >= s.offsetTop - 100) {
+            current = s.getAttribute('id');
+          }
+        });
+        links.forEach(function(a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+</body>
+</html>

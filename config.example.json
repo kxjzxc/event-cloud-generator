@@ -1,0 +1,11 @@
+{
+  "logseqPath": "./graph",
+  "outputPath": "./dist",
+  "storage": "local",
+  "media": {
+    "thumbnailSize": 200,
+    "previewSize": 800
+  },
+  "includeHidden": false,
+  "theme": "minimal"
+}

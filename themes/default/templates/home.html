@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="home">
+  <div id="event-index" style="display:none">{{ indexJson }}</div>
+  
+  <h1 class="home-title">EVENT CLOUD</h1>
+  <p class="home-subtitle">{{ subtitle }}</p>
+  
+  <button id="launch-btn" class="launch-btn">
+    <span>开启探索</span>
+  </button>
+  
+  <div class="home-stats">
+    共 <span id="total-events">0</span> 个事件 · 已解锁 <span id="unlocked-count">0</span> 个
+  </div>
+  
+  <script src="js/app.js"></script>
+</body>
+</html>
